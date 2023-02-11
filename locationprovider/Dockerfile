@@ -4,6 +4,7 @@ COPY go.mod .
 COPY go.sum .
 RUN go mod download
 COPY locationprovider/ /go/src/app/locationprovider/
+COPY proto/ /go/src/app/proto/
 WORKDIR /go/src/app/locationprovider/
 RUN CGO_ENABLED=0 go build
 

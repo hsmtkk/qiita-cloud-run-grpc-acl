@@ -4,6 +4,7 @@ COPY go.mod .
 COPY go.sum .
 RUN go mod download
 COPY maprender/ /go/src/app/maprender/
+COPY proto/ /go/src/app/proto/
 WORKDIR /go/src/app/maprender/
 RUN CGO_ENABLED=0 go build
 
