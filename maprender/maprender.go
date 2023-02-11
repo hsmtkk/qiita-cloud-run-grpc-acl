@@ -24,7 +24,7 @@ func main() {
 	}
 
 	googleMapAPIKey := os.Getenv("GOOGLE_MAP_API_KEY")
-	locationProviderHost := os.Getenv("LOCATION_PROVIDER_URL")
+	locationProviderHost := os.Getenv("LOCATION_PROVIDER_URI")
 	log.Print(locationProviderHost)
 
 	gRPCConn, err := gRPCConnect(locationProviderHost)
