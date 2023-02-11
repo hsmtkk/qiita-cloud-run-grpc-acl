@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"strconv"
 
@@ -20,12 +21,16 @@ func main() {
 	portStr := os.Getenv("PORT")
 	port, err := strconv.Atoi(portStr)
 	if err != nil {
-		log.Fatalf("failed to parse %s as int; %v", portStr, err)
+		log.Fatalf("failed to parse string as int; %s; %v", portStr, err)
 	}
 
 	googleMapAPIKey := os.Getenv("GOOGLE_MAP_API_KEY")
-	locationProviderHost := os.Getenv("LOCATION_PROVIDER_URI")
-	log.Print(locationProviderHost)
+	locationProviderURI := os.Getenv("LOCATION_PROVIDER_URI")
+	parsed, err := url.Parse(locationProviderURI)
+	if err != nil {
+		log.Fatalf("failed to parse location provider URI; %s; %v", locationProviderURI, err)
+	}
+	locationProviderHost := parsed.Host
 
 	gRPCConn, err := gRPCConnect(locationProviderHost)
 	if err != nil {
