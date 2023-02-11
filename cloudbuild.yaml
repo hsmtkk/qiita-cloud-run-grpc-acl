@@ -22,7 +22,7 @@ steps:
   args:
   - run
   - deploy
-  - locatin-provider
+  - location-provider
   - --image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/docker-registry/location-provider:$COMMIT_SHA
   - --region=${_REGION}
 - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
