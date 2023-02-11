@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option go_package = "github.com/hsmtkk/qiita-cloud-run-grpc-acl/proto";
+
+package proto;
+
+message LocationRequest {}
+
+message LocationResponse {
+    int32 longitude = 1;
+    int32 latitude = 2;
+}
+
+service LocationService {
+    rpc GetLocation(LocationRequest) returns (LocationResponse){}
+}

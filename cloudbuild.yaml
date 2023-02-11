@@ -1,0 +1,39 @@
+steps:
+- name: gcr.io/kaniko-project/executor:latest
+  id: location-provider-build
+  waitFor: ['-']
+  args:
+  - --cache=true
+  - --cache-ttl=128h
+  - --destination=${_REGION}-docker.pkg.dev/${PROJECT_ID}/docker-registry/location-provider:$COMMIT_SHA
+  - --dockerfile=locationprovider/Dockerfile
+- name: gcr.io/kaniko-project/executor:latest
+  id: map-render-build
+  waitFor: ['-']
+  args:
+  - --cache=true
+  - --cache-ttl=128h
+  - --destination=${_REGION}-docker.pkg.dev/${PROJECT_ID}/docker-registry/map-render:$COMMIT_SHA
+  - --dockerfile=maprender/Dockerfile
+- name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+  id: location-provider-deploy
+  waitFor: ['location-provider-build']
+  entrypoint: gcloud
+  args:
+  - run
+  - deploy
+  - locatin-provider
+  - --image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/docker-registry/location-provider:$COMMIT_SHA
+  - --region=${_REGION}
+- name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+  id: map-render-deploy
+  waitFor: ['map-render-build']
+  entrypoint: gcloud
+  args:
+  - run
+  - deploy
+  - map-render
+  - --image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/docker-registry/map-render:$COMMIT_SHA
+  - --region=${_REGION}
+substitutions:
+  _REGION: us-central1
