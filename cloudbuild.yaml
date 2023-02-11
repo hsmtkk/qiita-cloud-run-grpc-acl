@@ -23,6 +23,7 @@ steps:
   - run
   - deploy
   - location-provider
+  - --execution-environment=gen2
   - --image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/docker-registry/location-provider:$COMMIT_SHA
   - --region=${_REGION}
 - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
@@ -33,6 +34,7 @@ steps:
   - run
   - deploy
   - map-render
+  - --execution-environment=gen2
   - --image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/docker-registry/map-render:$COMMIT_SHA
   - --region=${_REGION}
 substitutions:
