@@ -59,6 +59,13 @@ class MyStack extends TerraformStack {
       secretData: 'dummy',
     });
 
+    const cloudRunNoAuth = new google.dataGoogleIamPolicy.DataGoogleIamPolicy(this, 'cloudRunNoAuth', {
+      binding: [{
+        role: 'roles/run.invoker',
+        members: ['allUsers'],
+      }],
+    });
+
     const locationProvider = new google.cloudRunV2Service.CloudRunV2Service(this, 'locationProvider', {
       ingress: 'INGRESS_TRAFFIC_INTERNAL_ONLY',
       location: region,
@@ -75,7 +82,13 @@ class MyStack extends TerraformStack {
       },
     });
 
-    new google.cloudRunV2Service.CloudRunV2Service(this, 'mapRender', {
+    new google.cloudRunServiceIamPolicy.CloudRunServiceIamPolicy(this, 'locationProviderNoAuth', {
+      location: region,
+      policyData: cloudRunNoAuth.policyData,
+      service: locationProvider.name,
+    });
+
+    const mapRender = new google.cloudRunV2Service.CloudRunV2Service(this, 'mapRender', {
       ingress: 'INGRESS_TRAFFIC_ALL',
       location: region,
       name: 'map-render',
@@ -103,6 +116,12 @@ class MyStack extends TerraformStack {
         },
         serviceAccount: mapRenderSA.email,
       },
+    });
+
+    new google.cloudRunServiceIamPolicy.CloudRunServiceIamPolicy(this, 'mapRenderNoAuth', {
+      location: region,
+      policyData: cloudRunNoAuth.policyData,
+      service: mapRender.name,
     });
 
   }
