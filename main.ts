@@ -82,9 +82,10 @@ class MyStack extends TerraformStack {
       },
     });
 
-    new google.cloudRunServiceIamPolicy.CloudRunServiceIamPolicy(this, 'locationProviderNoAuth', {
+    new google.cloudRunServiceIamMember.CloudRunServiceIamMember(this, 'mapRenderSACanInvokeLocationProvider', {
       location: region,
-      policyData: cloudRunNoAuth.policyData,
+      member: `serviceAccount:${mapRenderSA.email}`,
+      role: 'roles/run.invoker',
       service: locationProvider.name,
     });
 

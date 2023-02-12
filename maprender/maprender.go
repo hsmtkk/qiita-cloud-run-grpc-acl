@@ -13,8 +13,10 @@ import (
 	"github.com/hsmtkk/qiita-cloud-run-grpc-acl/proto"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"google.golang.org/api/idtoken"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/metadata"
 )
 
 func main() {
@@ -40,7 +42,7 @@ func main() {
 
 	locationClient := proto.NewLocationServiceClient(gRPCConn)
 
-	handler := newHandler(locationClient, googleMapAPIKey)
+	handler := newHandler(locationClient, locationProviderURI, googleMapAPIKey)
 
 	// Echo instance
 	e := echo.New()
@@ -76,16 +78,28 @@ func gRPCConnect(locationProviderAddress string) (*grpc.ClientConn, error) {
 }
 
 type handler struct {
-	locationClient  proto.LocationServiceClient
-	googleMAPAPIKey string
+	locationClient      proto.LocationServiceClient
+	locationProviderURI string
+	googleMAPAPIKey     string
 }
 
-func newHandler(locationClient proto.LocationServiceClient, googleMapAPIKey string) *handler {
-	return &handler{locationClient, googleMapAPIKey}
+func newHandler(locationClient proto.LocationServiceClient, locationProviderURI string, googleMapAPIKey string) *handler {
+	return &handler{locationClient, locationProviderURI, googleMapAPIKey}
 }
 
 func (h *handler) Handle(ectx echo.Context) error {
-	resp, err := h.locationClient.GetLocation(ectx.Request().Context(), &proto.LocationRequest{})
+	ctx := ectx.Request().Context()
+	tokenSource, err := idtoken.NewTokenSource(ctx, h.locationProviderURI)
+	if err != nil {
+		return fmt.Errorf("failed to init token source; %w", err)
+	}
+	token, err := tokenSource.Token()
+	if err != nil {
+		return fmt.Errorf("failed to get token; %w", err)
+	}
+	ctx = metadata.AppendToOutgoingContext(ctx, "authorization", "Bearer "+token.AccessToken)
+
+	resp, err := h.locationClient.GetLocation(ctx, &proto.LocationRequest{})
 	if err != nil {
 		return fmt.Errorf("gRPC request failed; %w", err)
 	}
