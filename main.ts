@@ -67,12 +67,12 @@ class MyStack extends TerraformStack {
     });
 
     const locationProvider = new google.cloudRunV2Service.CloudRunV2Service(this, 'locationProvider', {
-      ingress: 'INGRESS_TRAFFIC_INTERNAL_ONLY',
+      ingress: 'INGRESS_TRAFFIC_ALL',
       location: region,
       name: 'location-provider',
       template: {
         containers: [{
-          image: 'us-docker.pkg.dev/cloudrun/container/hello',
+          image: 'us-central1-docker.pkg.dev/qiita-cloud-run-grpc-acl/docker-registry/location-provider:latest',
         }],        
         scaling: {
           minInstanceCount: 0,
@@ -108,7 +108,7 @@ class MyStack extends TerraformStack {
             value: locationProvider.uri,
           },
           ],
-          image: 'us-docker.pkg.dev/cloudrun/container/hello',
+          image: 'us-central1-docker.pkg.dev/qiita-cloud-run-grpc-acl/docker-registry/map-render:latest',
         }],        
         scaling: {
           minInstanceCount: 0,

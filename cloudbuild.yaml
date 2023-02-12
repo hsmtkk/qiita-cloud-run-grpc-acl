@@ -6,6 +6,7 @@ steps:
   - --cache=true
   - --cache-ttl=128h
   - --destination=${_REGION}-docker.pkg.dev/${PROJECT_ID}/docker-registry/location-provider:$COMMIT_SHA
+  - --destination=${_REGION}-docker.pkg.dev/${PROJECT_ID}/docker-registry/location-provider:latest
   - --dockerfile=locationprovider/Dockerfile
 - name: gcr.io/kaniko-project/executor:latest
   id: map-render-build
@@ -14,6 +15,7 @@ steps:
   - --cache=true
   - --cache-ttl=128h
   - --destination=${_REGION}-docker.pkg.dev/${PROJECT_ID}/docker-registry/map-render:$COMMIT_SHA
+  - --destination=${_REGION}-docker.pkg.dev/${PROJECT_ID}/docker-registry/map-render:latest
   - --dockerfile=maprender/Dockerfile
 - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
   id: location-provider-deploy
