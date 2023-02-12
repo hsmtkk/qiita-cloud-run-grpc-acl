@@ -91,7 +91,7 @@ func (h *handler) Handle(ectx echo.Context) error {
 	}
 	longitude := resp.GetLongitude()
 	latitude := resp.GetLatitude()
-	html := fmt.Sprintf(htmlTemplate, longitude, latitude)
+	html := fmt.Sprintf(htmlTemplate, h.googleMAPAPIKey, longitude, latitude)
 	return ectx.HTML(http.StatusOK, html)
 }
 
@@ -100,7 +100,7 @@ width="600"
 height="600"
 frameborder="0" style="border:0"
 referrerpolicy="no-referrer-when-downgrade"
-src="https://www.google.com/maps/embed/v1/view?key=YOUR_API_KEY&center=%d,%d"
+src="https://www.google.com/maps/embed/v1/view?key=%s&center=%d,%d"
 allowfullscreen>
 </iframe>
 `
