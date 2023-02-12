@@ -17,7 +17,7 @@ type server struct {
 	proto.UnimplementedLocationServiceServer
 }
 
-func (s *server) SayHello(ctx context.Context, in *proto.LocationRequest) (*proto.LocationResponse, error) {
+func (s *server) GetLocation(ctx context.Context, in *proto.LocationRequest) (*proto.LocationResponse, error) {
 	var longitude int32 = int32(rand.Intn(180)) - 90
 	var latitude int32 = int32(rand.Intn(360)) - 180
 	return &proto.LocationResponse{Longitude: longitude, Latitude: latitude}, nil
