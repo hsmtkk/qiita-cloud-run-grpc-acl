@@ -30,9 +30,9 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to parse location provider URI; %s; %v", locationProviderURI, err)
 	}
-	locationProviderHost := parsed.Host
+	locationProviderAddress := fmt.Sprintf("%s:%d", parsed.Host, 443)
 
-	gRPCConn, err := gRPCConnect(locationProviderHost)
+	gRPCConn, err := gRPCConnect(locationProviderAddress)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -58,8 +58,8 @@ func main() {
 	}
 }
 
-func gRPCConnect(locationProviderHost string) (*grpc.ClientConn, error) {
-	opts := []grpc.DialOption{grpc.WithAuthority(locationProviderHost)}
+func gRPCConnect(locationProviderAddress string) (*grpc.ClientConn, error) {
+	opts := []grpc.DialOption{grpc.WithAuthority(locationProviderAddress)}
 	systemRoots, err := x509.SystemCertPool()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get system cert; %w", err)
@@ -68,7 +68,7 @@ func gRPCConnect(locationProviderHost string) (*grpc.ClientConn, error) {
 		RootCAs: systemRoots,
 	})
 	opts = append(opts, grpc.WithTransportCredentials(cred))
-	gRPCConn, err := grpc.Dial(locationProviderHost, opts...)
+	gRPCConn, err := grpc.Dial(locationProviderAddress, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect location provider with gRPC; %w", err)
 	}
